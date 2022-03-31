@@ -1,8 +1,9 @@
 import { redis } from '@/config/setupRedis'
 import { UserRepository } from '@/database/userRepository'
 import { User } from '@/domain/entities/user'
+import { appToken } from '@/util/token'
+import { wrap } from '@mikro-orm/core'
 import { Request, Response } from 'express'
-import { sign } from 'jsonwebtoken'
 
 type LoginCredentials = {
 	username: string
@@ -34,8 +35,8 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { username, password }: LoginCredentials = req.body
 		const userRepository = new UserRepository()
-		const query: User = await userRepository
-			.qb()
+		const qb = userRepository.qb()
+		const query: User = await qb
 			.where({ username: username, password: password })
 			.execute('get')
 
@@ -45,16 +46,28 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		const { id, isAdmin } = query
-		const token = sign(
-			{ username, isAdmin },
-			process.env.JWT_SECRET as string,
-			{
-				expiresIn: process.env.JWT_EXPIRATION,
-			}
-		)
+		let { refreshToken } = query
+		const token = appToken.generate({ username, isAdmin })
+
+		if (!refreshToken || !appToken.isValid(refreshToken)) {
+			refreshToken = appToken.generate(
+				{
+					username,
+					isAdmin,
+				},
+				true
+			)
+			const entity = await userRepository.findOne({ username })
+			wrap(entity).assign({
+				refreshToken,
+			})
+			await userRepository.flush()
+		}
+
 		await redis.client.set(username, token)
-		res.json({ id, username, token }).end()
+		res.json({ id, username, token, refreshToken }).end()
 	} catch (error: unknown) {
+		console.log(error)
 		res.status(500).json({ Error: `Bad request`, stack: error }).end()
 	}
 }
