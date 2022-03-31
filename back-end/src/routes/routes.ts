@@ -12,14 +12,14 @@ export default (router: Router): void => {
 	})
 
 	router.get('/user', authJwt.verifyToken, (req: Request, res: Response) => {
-		res.json({ hello: 'world' }).end()
+		res.json({ hello: 'world from user protected content' }).end()
 	})
 
 	router.get(
 		'/admin',
 		[authJwt.verifyToken, authJwt.verifyRules],
 		(req: Request, res: Response) => {
-			res.json({ hello: 'world' }).end()
+			res.json({ hello: 'world from admin protected content' }).end()
 		}
 	)
 
