@@ -1,4 +1,4 @@
-import { verify } from 'jsonwebtoken'
+import { TokenExpiredError, verify } from 'jsonwebtoken'
 import { NextFunction, Request, Response } from 'express'
 
 type JwtPayload = {
@@ -16,11 +16,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 		})
 	}
 	verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-		if (err) {
-			return res.status(401).send({
-				message: `Unauthorized! ${err}`,
-			})
-		}
+		if (err) catchError(err, res)
 		const { username, isAdmin } = decoded as JwtPayload
 		req.user = {
 			username,
@@ -33,10 +29,20 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 const verifyRules = (req: Request, res: Response, next: NextFunction) => {
 	if (!req.user.isAdmin) {
 		return res.status(403).send({
-			message: '403 Forbidden',
+			message: `403 Forbidden: Admin: ${req.user.isAdmin}.`,
 		})
 	}
 	next()
+}
+
+const catchError = (err: unknown, res: Response) => {
+	if (err instanceof TokenExpiredError) {
+		return res
+			.status(401)
+			.send({ message: 'Unauthorized! Access Token was expired!' })
+			.end()
+	}
+	return res.status(401).send({ message: 'Unauthorized!' }).end()
 }
 
 const authJwt = {
