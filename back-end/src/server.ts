@@ -2,6 +2,7 @@ import './config/moduleAlias'
 import 'dotenv/config'
 import express from 'express'
 import http from 'http'
+import cors, { CorsOptions } from 'cors'
 import { setupRoutes } from './config/setupRoutes'
 import { setupRedis } from './config/setupRedis'
 import { MikroORM, RequestContext } from '@mikro-orm/core'
@@ -12,6 +13,11 @@ export const DI = {} as {
 	orm: MikroORM
 	em: EntityManager
 }
+
+const corsOptions = {
+	origin: 'http://localhost:3001',
+	credentials: true,
+} as CorsOptions
 
 const port = process.env.SERVER_PORT || 3000
 const app = express()
@@ -26,6 +32,7 @@ const init = async () => {
 	}
 	console.info('DB status: Connected...')
 
+	app.use(cors(corsOptions))
 	app.use(express.json())
 	app.use(express.urlencoded({ extended: true }))
 	app.use((req, res, next) => {
