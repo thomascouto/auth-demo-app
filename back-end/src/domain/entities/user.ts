@@ -1,10 +1,11 @@
-import { Entity, Property } from '@mikro-orm/core'
+import { Entity, Property, TextType } from '@mikro-orm/core'
 import { AbstractBaseEntity } from './abstractBaseEntity'
 
 type UserProps = {
 	username: string
 	password: string
 	isAdmin: boolean
+	refreshToken?: string
 }
 
 @Entity()
@@ -17,6 +18,9 @@ export class User extends AbstractBaseEntity {
 
 	@Property({ default: false })
 	isAdmin!: boolean
+
+	@Property({ type: TextType, nullable: true })
+	refreshToken!: string
 
 	set props({ username, password, isAdmin }: UserProps) {
 		this.username = username
