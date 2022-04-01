@@ -15,19 +15,22 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 	try {
 		if (username !== undefined && password !== undefined) {
 			const userRepository = new UserRepository()
-			const { isAdmin } = req.body
 			const user = new User({
 				username: username.trim(),
 				password: password.trim(),
-				isAdmin: isAdmin ? isAdmin : false,
+				isAdmin: req.body.isAdmin ?? false,
 			})
 			await userRepository.persistAndFlush(user)
 			res.status(201).end()
 			return
 		}
-		throw new Error()
+		throw new Error('Mandatory field(s) not found.')
 	} catch (error: unknown) {
-		res.status(500).json({ Error: `Bad request`, stack: error }).end()
+		console.log(error)
+		res
+			.status(400)
+			.json({ error: `Bad request`, msg: (error as Error).message })
+			.end()
 	}
 }
 
