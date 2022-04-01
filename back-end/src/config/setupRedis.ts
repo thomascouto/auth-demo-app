@@ -1,5 +1,4 @@
-import { RedisClientType } from '@node-redis/client'
-import { createClient, RedisClientOptions } from 'redis'
+import { RedisClientType, RedisClientOptions, createClient } from 'redis'
 
 const redis = {} as {
 	client: RedisClientType
