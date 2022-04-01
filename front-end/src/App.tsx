@@ -1,15 +1,18 @@
-import React, { Component } from "react"
+import React, { Component, ReactNode } from "react"
+import { Routes, Route } from "react-router-dom"
 import "./App.css"
-import FormComponent from "./form/formComponent"
-
+import NotFound from "./components/404"
+import AppForm from "./components/form"
+import Layout from "./components/layout"
 export class App extends Component {
-	render(): React.ReactNode {
+	render(): ReactNode {
 		return (
-			<div className="App">
-				<header className="App-header">
-					<FormComponent />
-				</header>
-			</div>
+			<Routes>
+				<Route path="/" element={<Layout />}>
+					<Route path="login" element={<AppForm />} />
+					<Route path="*" element={<NotFound />} />
+				</Route>
+			</Routes>
 		)
 	}
 }

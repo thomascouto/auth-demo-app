@@ -1,14 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import './index.css'
-import { App } from './App'
+import React, { StrictMode } from "react"
+import { render } from "react-dom"
+import { App } from "./App"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import "bootstrap/dist/css/bootstrap.min.css"
+import "./index.css"
+import { AuthProvider } from "./context/authProvider"
 
-// Importing the Bootstrap CSS
-import 'bootstrap/dist/css/bootstrap.min.css'
-
-ReactDOM.render(
-	<React.StrictMode>
-		<App />
-	</React.StrictMode>,
-	document.getElementById('root')
+const root = document.getElementById("root")
+render(
+	<StrictMode>
+		<AuthProvider>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/*" element={<App />} />
+				</Routes>
+			</BrowserRouter>
+		</AuthProvider>
+	</StrictMode>,
+	root
 )
