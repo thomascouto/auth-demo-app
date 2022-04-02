@@ -3,26 +3,26 @@ import { Alert } from "react-bootstrap"
 
 interface AlertMessageProps {
 	isAlertShown: boolean
-	statusCode: number
-	serverResponse?: string
+	isError: boolean
+	validationResponse?: string
 }
 
-const alertType = (statusCode: number): string => {
-	return statusCode > 400 ? "danger" : "success"
+const alertType = (isError: boolean): string => {
+	return isError ? "danger" : "success"
 }
 
 const AlertMessage: FunctionComponent<AlertMessageProps> = ({
 	isAlertShown,
-	serverResponse,
-	statusCode,
+	validationResponse,
+	isError,
 }: AlertMessageProps) => {
 	return (
 		<Alert
 			className="pt-3 mt-3"
-			variant={alertType(statusCode)}
+			variant={alertType(isError)}
 			show={isAlertShown}
 		>
-			<span>{serverResponse}</span>
+			<span>{validationResponse}</span>
 		</Alert>
 	)
 }

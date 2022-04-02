@@ -1,12 +1,11 @@
 import React, { StrictMode } from "react"
 import { render } from "react-dom"
-import { App } from "./App"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { AuthProvider } from "./context/authProvider"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./index.css"
-import { AuthProvider } from "./context/authProvider"
+import App from "./App"
 
-const root = document.getElementById("root")
 render(
 	<StrictMode>
 		<AuthProvider>
@@ -17,5 +16,5 @@ render(
 			</BrowserRouter>
 		</AuthProvider>
 	</StrictMode>,
-	root
+	document.getElementById("root")
 )

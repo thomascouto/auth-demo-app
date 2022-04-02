@@ -1,13 +1,18 @@
-import React, { createContext, useState } from "react"
-const AuthContext = createContext({})
+import React, { createContext, useState, FC } from "react"
+import { LoginServerData } from "../api/loginServerData"
 
-export const AuthProvider = ({ children }) => {
-	const [auth, setAuth] = useState({})
+const useValue = () => {
+	const [auth, setAuth] = useState<LoginServerData>()
+	return {
+		auth,
+		setAuth,
+	}
+}
 
+const AuthContext = createContext({} as ReturnType<typeof useValue>)
+export const AuthProvider: FC = ({ children }) => {
 	return (
-		<AuthContext.Provider value={{ auth, setAuth }}>
-			{children}
-		</AuthContext.Provider>
+		<AuthContext.Provider value={useValue()}>{children}</AuthContext.Provider>
 	)
 }
 
