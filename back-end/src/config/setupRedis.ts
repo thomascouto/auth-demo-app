@@ -10,7 +10,9 @@ const redisOptions: RedisClientOptions = {
 
 const setupRedis = async (): Promise<RedisClientType> => {
 	const client = createClient(redisOptions)
-	client.on('error', (err) => console.log('Redis Client Error: ', err))
+	client.on('error', (err) =>
+		console.log('Redis Client Error: ', (err as Error).message)
+	)
 	client.on('connect', function () {
 		console.log('Redis server connected...')
 	})
