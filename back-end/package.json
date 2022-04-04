@@ -1,12 +1,12 @@
 {
-	"name": "back-end",
+	"name": "back-end-server",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
 		"dev": "tsnd --respawn --transpile-only --clear -r dotenv/config --inspect=0.0.0.0:9229 src/server.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"prepare": "cd .. && husky install back-end/.husky"
+		"prepare": "cd .. && husky install back-end-server/.husky"
 	},
 	"keywords": [],
 	"author": "",
@@ -16,33 +16,38 @@
 		"@mikro-orm/migrations": "^5.1.1",
 		"@mikro-orm/postgresql": "^5.1.1",
 		"@mikro-orm/reflection": "^5.1.1",
-		"cors": "^2.8.5",
+		"connect-redis": "^6.1.3",
 		"dotenv": "^16.0.0",
 		"express": "^4.17.3",
-		"jsonwebtoken": "^8.5.1",
+		"express-session": "^1.17.2",
+		"helmet": "^5.0.2",
 		"module-alias": "^2.2.2",
-		"redis": "^4.0.4"
+		"redis": "^4.0.6"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^16.2.3",
 		"@commitlint/config-conventional": "^16.2.1",
 		"@mikro-orm/cli": "^5.1.1",
 		"@mikro-orm/seeder": "^5.1.1",
-		"@types/cors": "^2.8.12",
+		"@types/connect-redis": "^0.0.18",
 		"@types/express": "^4.17.13",
-		"@types/jsonwebtoken": "^8.5.8",
+		"@types/express-session": "^1.17.4",
 		"@types/module-alias": "^2.0.1",
-		"@types/node": "^17.0.22",
-		"@typescript-eslint/eslint-plugin": "^5.16.0",
-		"@typescript-eslint/parser": "^5.16.0",
-		"eslint": "^8.11.0",
+		"@types/morgan": "^1.9.3",
+		"@types/node": "^17.0.23",
+		"@typescript-eslint/eslint-plugin": "^5.18.0",
+		"@typescript-eslint/parser": "^5.18.0",
+		"eslint": "^8.12.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prettier": "^4.0.0",
 		"husky": "^7.0.4",
-		"lint-staged": "^12.3.7",
-		"prettier": "^2.6.0",
+		"morgan": "^1.10.0",
+		"prettier": "^2.6.2",
 		"ts-node-dev": "^1.1.8",
-		"typescript": "^4.6.2"
+		"typescript": "^4.6.3"
+	},
+	"engines": {
+		"node": "16.x"
 	},
 	"mikro-orm": {
 		"useTsNode": true,
@@ -50,8 +55,5 @@
 			"./src/config/orm.ts",
 			"./dist/config/orm.js"
 		]
-	},
-	"engines": {
-		"node": "16.x"
 	}
 }
