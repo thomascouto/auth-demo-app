@@ -1,0 +1,29 @@
+services:
+  redis:
+    container_name: redis_auth_container
+    image: redis:6.2.6
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --requirepass auth1234 --loglevel warning
+  postgres:
+    container_name: postgres_auth_container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - '5432:5432'
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+#docker-compose -p auth up -d
