@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "tsnd --respawn --transpile-only --clear -r dotenv/config --inspect=0.0.0.0:9229 src/server.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"prepare": "cd .. && husky install back-end-server/.husky"
+		"prepare": "cd .. && husky install back-end/.husky"
 	},
 	"keywords": [],
 	"author": "",
@@ -57,3 +57,4 @@
 		]
 	}
 }
+
