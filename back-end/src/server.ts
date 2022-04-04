@@ -39,6 +39,20 @@ const init = async () => {
 	await setupRedis()
 	const RedisStore = connectRedis(session)
 
+	app.use(function (req, res, next) {
+		res.header('Access-Control-Allow-Credentials', 'true')
+		res.header('Access-Control-Allow-Origin', '*')
+		res.header(
+			'Access-Control-Allow-Methods',
+			'GET,PUT,POST,DELETE,UPDATE,OPTIONS'
+		)
+		res.header(
+			'Access-Control-Allow-Headers',
+			'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Set-Cookie'
+		)
+		next()
+	})
+
 	app.use(
 		session({
 			store: new RedisStore({ client: redis.client, disableTouch: true }),
