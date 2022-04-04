@@ -6,9 +6,10 @@ const redis = {} as {
 
 const redisOptions: RedisClientOptions = {
 	password: process.env.REDIS_PASS,
+	legacyMode: true,
 }
 
-const setupRedis = async (): Promise<RedisClientType> => {
+const setupRedis = async (): Promise<void> => {
 	const client = createClient(redisOptions)
 	client.on('error', (err) =>
 		console.log('Redis Client Error: ', (err as Error).message)
@@ -18,7 +19,6 @@ const setupRedis = async (): Promise<RedisClientType> => {
 	})
 	await client.connect()
 	redis.client = client
-	return client
 }
 
 export { setupRedis, redis }

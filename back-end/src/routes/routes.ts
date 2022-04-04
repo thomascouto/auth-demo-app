@@ -1,29 +1,12 @@
-import { signin, signout, signup } from '@/controller/userController'
-import { Router, Request, Response } from 'express'
-import authJwt from '@/middlewares/jwtAuthMiddleware'
+import { Request, Response, Router } from 'express'
+import { login, logout, signup } from '@/controller/userController'
 
 export default (router: Router): void => {
 	router.get('/', (req: Request, res: Response) => {
-		res.redirect('/headers')
-	})
-
-	router.get('/headers', (req: Request, res: Response) => {
 		res.json(req.headers).end()
 	})
 
-	router.get('/user', authJwt.verifyToken, (req: Request, res: Response) => {
-		res.json({ hello: 'world from user protected content' }).end()
-	})
-
-	router.get(
-		'/admin',
-		[authJwt.verifyToken, authJwt.verifyRules],
-		(req: Request, res: Response) => {
-			res.json({ hello: 'world from admin protected content' }).end()
-		}
-	)
-
+	router.post('/login', login)
 	router.post('/signup', signup)
-	router.post('/signin', signin)
-	router.post('/signout', signout)
+	router.post('/logout', logout)
 }

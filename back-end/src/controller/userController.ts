@@ -1,8 +1,5 @@
-import { redis } from '@/config/setupRedis'
 import { UserRepository } from '@/database/userRepository'
 import { User } from '@/domain/entities/user'
-import { appToken } from '@/util/token'
-import { wrap } from '@mikro-orm/core'
 import { Request, Response } from 'express'
 
 type LoginCredentials = {
@@ -10,8 +7,9 @@ type LoginCredentials = {
 	password: string
 }
 
-export const signup = async (req: Request, res: Response): Promise<void> => {
-	const { username, password }: LoginCredentials = req.body
+const signup = async (req: Request, res: Response): Promise<void> => {
+	const { username, password } = req.body
+
 	try {
 		if (username !== undefined && password !== undefined) {
 			const userRepository = new UserRepository()
@@ -26,7 +24,6 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 		}
 		throw new Error('Mandatory field(s) not found.')
 	} catch (error: unknown) {
-		console.log(error)
 		res
 			.status(400)
 			.json({ error: `Bad request`, msg: (error as Error).message })
@@ -34,7 +31,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 	}
 }
 
-export const signin = async (req: Request, res: Response): Promise<void> => {
+const login = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { username, password }: LoginCredentials = req.body
 		const userRepository = new UserRepository()
@@ -49,34 +46,23 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		const { id, isAdmin } = query
-		let { refreshToken } = query
-		const token = appToken.generate({ username, isAdmin })
 
-		if (!refreshToken || !appToken.isValid(refreshToken)) {
-			refreshToken = appToken.generate(
-				{
-					username,
-					isAdmin,
-				},
-				true
-			)
-			const entity = await userRepository.findOne({ username })
-			wrap(entity).assign({
-				refreshToken,
-			})
-			await userRepository.flush()
+		req.user = {
+			isAdmin,
+			username,
 		}
 
-		await redis.client.set(username, token)
-		res.json({ id, username, token, refreshToken }).end()
+		res.json({ id, username, isAdmin }).end()
 	} catch (error: unknown) {
-		console.log(error)
 		res.status(500).json({ Error: `Bad request`, stack: error }).end()
 	}
 }
 
-export const signout = async (req: Request, res: Response): Promise<void> => {
-	const { username } = req.body
-	const result = await redis.client.del(username)
-	res.status(200).json({ result }).end()
+const logout = async (req: Request, res: Response): Promise<void> => {
+	req.session.destroy((err) => {
+		console.error('Erro', err)
+	})
+
+	res.redirect('/')
 }
+export { signup, login, logout }
