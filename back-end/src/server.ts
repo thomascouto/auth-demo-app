@@ -9,6 +9,7 @@ import { EntityManager } from '@mikro-orm/postgresql'
 import { setupRoutes, setupRedis } from '@/config'
 import helmet from 'helmet'
 import logger from 'morgan'
+import cors from 'cors'
 import { redis } from './config/setupRedis'
 
 export const DI = {} as {
@@ -31,7 +32,15 @@ const init = async () => {
 	}
 	console.info('DB status: Connected...')
 
-	if (process.env.TS_NODE_DEV) app.use(logger('short'))
+	if (process.env.TS_NODE_DEV) {
+		app.use(logger('common'))
+		app.use(
+			cors({
+				origin: 'http://localhost:3001',
+				credentials: true,
+			})
+		)
+	}
 	app.use(express.json())
 	app.use(express.urlencoded({ extended: true }))
 	app.set('trust proxy', 1)
@@ -41,7 +50,6 @@ const init = async () => {
 
 	app.use(function (req, res, next) {
 		res.header('Access-Control-Allow-Credentials', 'true')
-		res.header('Access-Control-Allow-Origin', '*')
 		res.header(
 			'Access-Control-Allow-Methods',
 			'GET,PUT,POST,DELETE,UPDATE,OPTIONS'

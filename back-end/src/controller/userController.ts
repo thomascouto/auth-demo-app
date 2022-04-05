@@ -33,6 +33,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
 const login = async (req: Request, res: Response): Promise<void> => {
 	try {
+		console.log(req.body)
 		const { username, password }: LoginCredentials = req.body
 		const userRepository = new UserRepository()
 		const qb = userRepository.qb()
@@ -65,4 +66,9 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 
 	res.redirect('/')
 }
-export { signup, login, logout }
+
+const refresh = async (req: Request, res: Response): Promise<void> => {
+	console.log(req.user)
+	res.status(200).end()
+}
+export { signup, login, logout, refresh }
