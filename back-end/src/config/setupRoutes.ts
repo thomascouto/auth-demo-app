@@ -21,7 +21,7 @@ const recursiveReading = (dir: string, router: Router): void => {
 		if (element.isFile()) {
 			;(await import(`${dir}/${element.name}`)).default(router)
 		} else if (element.isDirectory()) {
-			recursiveReading(`${BASE_DIR}/${element.name}`, router)
+			recursiveReading(join(dir, element.name), router)
 		}
 	})
 }

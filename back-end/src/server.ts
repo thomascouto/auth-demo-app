@@ -40,7 +40,7 @@ const init = async () => {
 				credentials: true,
 			})
 		)
-	}
+	} else app.use(helmet())
 	app.use(express.json())
 	app.use(express.urlencoded({ extended: true }))
 	app.set('trust proxy', 1)
@@ -48,7 +48,7 @@ const init = async () => {
 	await setupRedis()
 	const RedisStore = connectRedis(session)
 
-	app.use(function (req, res, next) {
+	app.use((req, res, next) => {
 		res.header('Access-Control-Allow-Credentials', 'true')
 		res.header(
 			'Access-Control-Allow-Methods',
@@ -81,7 +81,6 @@ const init = async () => {
 	})
 
 	app.disable('x-powered-by')
-	process.env.TS_NODE_DEV ?? app.use(helmet())
 
 	setupRoutes(app)
 	app.use((req, res) =>

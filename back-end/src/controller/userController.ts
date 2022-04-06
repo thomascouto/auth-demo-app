@@ -33,7 +33,6 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
 const login = async (req: Request, res: Response): Promise<void> => {
 	try {
-		console.log(req.body)
 		const { username, password }: LoginCredentials = req.body
 		const userRepository = new UserRepository()
 		const qb = userRepository.qb()
@@ -61,10 +60,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 const logout = async (req: Request, res: Response): Promise<void> => {
 	req.session.destroy((err) => {
-		console.error('Erro', err)
+		if (err) res.status(500).json(err).end()
+		else res.clearCookie('/').status(200).end()
 	})
-
-	res.redirect('/')
 }
 
 const refresh = async (req: Request, res: Response): Promise<void> => {
