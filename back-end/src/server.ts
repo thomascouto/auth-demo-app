@@ -10,7 +10,8 @@ import { setupRoutes, setupRedis } from '@/config'
 import helmet from 'helmet'
 import logger from 'morgan'
 import cors from 'cors'
-import { redis } from './config/setupRedis'
+import { redis } from '@/config/setupRedis'
+import { cookieName, cookieOptions } from '@/config/cookiesOptions'
 
 export const DI = {} as {
 	server: http.Server
@@ -67,13 +68,8 @@ const init = async () => {
 			secret: process.env.COOKIE_SECRET as string,
 			resave: false,
 			saveUninitialized: true,
-			cookie: {
-				secure: process.env.TS_NODE_DEV ? false : true,
-				maxAge: 60 * 60 * 1000,
-				httpOnly: true,
-			},
-
-			name: 'auth.cookie',
+			cookie: cookieOptions,
+			name: cookieName,
 		})
 	)
 	app.use((req, res, next) => {
@@ -84,7 +80,10 @@ const init = async () => {
 
 	setupRoutes(app)
 	app.use((req, res) =>
-		res.status(404).json({ Error: `Route ${req.url} not found.` })
+		res
+			.status(404)
+			.json({ Error: `Route ${req.url} not found.` })
+			.end()
 	)
 }
 

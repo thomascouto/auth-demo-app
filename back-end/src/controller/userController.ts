@@ -34,11 +34,8 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 const login = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { username, password }: LoginCredentials = req.body
-		const userRepository = new UserRepository()
-		const qb = userRepository.qb()
-		const query: User = await qb
-			.where({ username: username, password: password })
-			.execute('get')
+		const qb = new UserRepository().qb()
+		const query: User = await qb.where({ username, password }).execute('get')
 
 		if (query === null) {
 			res.status(401).json({ Error: 'Not authorized' }).end()
@@ -52,7 +49,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
 			username,
 		}
 
-		res.json({ id, username, isAdmin }).end()
+		req.isAuthenticated = true
+		res.status(200).json({ id, username, isAdmin }).end()
 	} catch (error: unknown) {
 		res.status(500).json({ Error: `Bad request`, stack: error }).end()
 	}
@@ -61,12 +59,24 @@ const login = async (req: Request, res: Response): Promise<void> => {
 const logout = async (req: Request, res: Response): Promise<void> => {
 	req.session.destroy((err) => {
 		if (err) res.status(500).json(err).end()
-		else res.clearCookie('/').status(200).end()
+		else {
+			res.clearCookie('/').status(200).end()
+			req.isAuthenticated = false
+		}
 	})
 }
 
 const refresh = async (req: Request, res: Response): Promise<void> => {
-	console.log(req.user)
-	res.status(200).end()
+	if (!req.isAuthenticated) {
+		res.sendStatus(403)
+		return
+	}
+
+	const qb = new UserRepository().qb()
+	const { id, username, isAdmin }: User = await qb
+		.where({ username: req.user.username })
+		.execute('get')
+
+	res.status(200).json({ id, username, isAdmin }).end()
 }
 export { signup, login, logout, refresh }

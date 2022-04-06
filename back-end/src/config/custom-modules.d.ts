@@ -1,6 +1,7 @@
 declare namespace Express {
 	interface Request {
 		user: UserRequest
+		isAuthenticated: boolean
 	}
 }
 
