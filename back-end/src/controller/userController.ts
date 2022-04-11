@@ -1,3 +1,4 @@
+import { cookieOptions } from '@/config/cookiesOptions'
 import { UserRepository } from '@/database/userRepository'
 import { User } from '@/domain/entities/user'
 import { Request, Response } from 'express'
@@ -50,7 +51,13 @@ const login = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		req.isAuthenticated = true
-		res.status(200).json({ id, username, isAdmin }).end()
+		res
+			.cookie('username', username, cookieOptions)
+			.cookie('logged_in', 'yes', cookieOptions)
+			.cookie('SESSION', req.sessionID, cookieOptions)
+			.status(200)
+			.json({ id, username, isAdmin })
+			.end()
 	} catch (error: unknown) {
 		res.status(500).json({ Error: `Bad request`, stack: error }).end()
 	}

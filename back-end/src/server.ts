@@ -7,11 +7,12 @@ import connectRedis from 'connect-redis'
 import { MikroORM, RequestContext } from '@mikro-orm/core'
 import { EntityManager } from '@mikro-orm/postgresql'
 import { setupRoutes, setupRedis } from '@/config'
-import helmet from 'helmet'
 import logger from 'morgan'
 import cors from 'cors'
 import { redis } from '@/config/setupRedis'
 import { cookieName, cookieOptions } from '@/config/cookiesOptions'
+import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 
 export const DI = {} as {
 	server: http.Server
@@ -37,13 +38,14 @@ const init = async () => {
 		app.use(logger('common'))
 		app.use(
 			cors({
-				origin: 'http://localhost:3001',
+				origin: ['http://localhost:3001', 'http://192.168.0.28:3001'],
 				credentials: true,
 			})
 		)
 	} else app.use(helmet())
 	app.use(express.json())
 	app.use(express.urlencoded({ extended: true }))
+	app.use(cookieParser())
 	app.set('trust proxy', 1)
 
 	await setupRedis()
