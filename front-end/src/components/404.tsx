@@ -1,7 +1,5 @@
-import React, { FunctionComponent } from "react"
+import React from "react"
 
-const NotFound: FunctionComponent = () => {
-	return <h1>404</h1>
+export default function NotFound() {
+	return <div>404</div>
 }
-
-export default NotFound
