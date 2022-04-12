@@ -1,11 +1,10 @@
-declare namespace Express {
-	interface Request {
-		user: UserRequest
-		isAuthenticated: boolean
-	}
-}
+// declare namespace Express {
+// 	interface Request {
+// 		user: UserRequest
+// 	}
+// }
 
-type UserRequest = {
-	username: string
-	isAdmin: boolean
-}
+// type UserRequest = {
+// 	username: string
+// 	isAdmin: boolean
+// }

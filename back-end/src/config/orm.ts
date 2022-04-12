@@ -10,7 +10,7 @@ const options: Options = {
 	password: process.env.DB_PASSWORD,
 	host: process.env.DB_HOST,
 	port: Number(process.env.DB_PORT),
-	debug: true,
+	debug: false,
 	metadataProvider: TsMorphMetadataProvider,
 }
 

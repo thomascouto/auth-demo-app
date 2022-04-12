@@ -1,4 +1,5 @@
-import { cookieOptions } from '@/config/cookiesOptions'
+import { redis } from '@/config'
+import { cookies } from '@/config/cookies'
 import { UserRepository } from '@/database/userRepository'
 import { User } from '@/domain/entities/user'
 import { Request, Response } from 'express'
@@ -45,45 +46,54 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 		const { id, isAdmin } = query
 
-		req.user = {
-			isAdmin,
-			username,
-		}
-
-		req.isAuthenticated = true
-		res
-			.cookie('username', username, cookieOptions)
-			.cookie('logged_in', 'yes', cookieOptions)
-			.cookie('SESSION', req.sessionID, cookieOptions)
-			.status(200)
-			.json({ id, username, isAdmin })
-			.end()
+		req.session.regenerate((err) => {
+			if (err) {
+				throw new Error((err as Error).message)
+			}
+			res
+				.cookie('username', username, cookies.options)
+				.cookie('logged_in', 'yes', cookies.options)
+				.cookie('SESSION', req.sessionID, cookies.options)
+				.status(200)
+				.json({ id, username, isAdmin, session: req.sessionID })
+				.end()
+		})
 	} catch (error: unknown) {
 		res.status(500).json({ Error: `Bad request`, stack: error }).end()
 	}
 }
 
-const logout = async (req: Request, res: Response): Promise<void> => {
+const logout = (req: Request, res: Response): void => {
 	req.session.destroy((err) => {
 		if (err) res.status(500).json(err).end()
-		else {
-			res.clearCookie('/').status(200).end()
-			req.isAuthenticated = false
-		}
 	})
+	res.clearCookie('username')
+	res.clearCookie('SESSION')
+	res.clearCookie('auth')
+	res.cookie('logged_in', 'no', cookies.options)
+	res.sendStatus(200)
 }
 
 const refresh = async (req: Request, res: Response): Promise<void> => {
-	if (!req.isAuthenticated) {
-		res.sendStatus(403)
-		return
+	const session = req.cookies['SESSION']
+	if (session === req.sessionID) {
+		const username = req.cookies['username']
+		const isExpired =
+			new Date(
+				JSON.parse(await redis.client.v4.GET('sess:'.concat(session)))[
+					'cookie'
+				]['expires']
+			) < new Date()
+		if (username && !isExpired) {
+			const qb = new UserRepository().qb()
+			const { id, isAdmin }: User = await qb.where({ username }).execute('get')
+			res
+				.json({ id, username, isAdmin, session: req.sessionID })
+				.status(200)
+				.end()
+			return
+		}
 	}
-
-	const qb = new UserRepository().qb()
-	const { id, username, isAdmin }: User = await qb
-		.where({ username: req.user.username })
-		.execute('get')
-
-	res.status(200).json({ id, username, isAdmin }).end()
+	res.sendStatus(403)
 }
 export { signup, login, logout, refresh }
