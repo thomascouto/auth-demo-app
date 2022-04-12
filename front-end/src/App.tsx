@@ -1,30 +1,35 @@
 import React from "react"
-import { Routes, Route } from "react-router-dom"
-import "./App.css"
+import { Routes, Route } from "react-router"
 import NotFound from "./components/404"
-import Home from "./components/Home"
+import Admin from "./components/Admin"
 import Layout from "./components/Layout"
 import Login from "./components/Login"
-import RequireAuth from "./components/RequireAuth"
-import PersistLogin from "./components/PersistLogin"
+import Main from "./components/Main"
+import PrivateRoute from "./components/PrivateRoute"
+import GlobalStateContext from "./context/globalStateContext"
+import useGlobalState from "./hooks/useGlobalState"
 
 const App = () => {
-	return (
-		<Routes>
-			<Route path="/" element={<Layout />}>
-				<Route path="login" element={<Login />} />
+	const globalState = useGlobalState()
 
-				<Route element={<PersistLogin />}>
-					<Route element={<RequireAuth />}>
-						<Route path="/" element={<Home />} />
+	return (
+		<GlobalStateContext.Provider value={globalState}>
+			<Routes>
+				<Route path="/" element={<Layout />}>
+					<Route path="login" element={<Login />} />
+
+					<Route element={<PrivateRoute adminRule={true} />}>
+						<Route path="admin" element={<Admin />} />
+					</Route>
+
+					<Route element={<PrivateRoute adminRule={false} />}>
+						<Route path="/" element={<Main />} />
 					</Route>
 				</Route>
-
 				<Route path="*" element={<NotFound />} />
-			</Route>
-		</Routes>
+			</Routes>
+		</GlobalStateContext.Provider>
 	)
 }
 
 export default App
-
