@@ -78,12 +78,13 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
 	const session = req.cookies['SESSION']
 	if (session === req.sessionID) {
 		const username = req.cookies['username']
-		const isExpired =
-			new Date(
-				JSON.parse(await redis.client.v4.GET('sess:'.concat(session)))[
-					'cookie'
-				]['expires']
-			) < new Date()
+		const sessionCookies =
+			JSON.parse(await redis.client.v4.GET('sess:'.concat(session)))['cookie'][
+				'expires'
+			] ?? null
+		const isExpired = sessionCookies
+			? new Date(sessionCookies) < new Date()
+			: true
 		if (username && !isExpired) {
 			const qb = new UserRepository().qb()
 			const { id, isAdmin }: User = await qb.where({ username }).execute('get')
