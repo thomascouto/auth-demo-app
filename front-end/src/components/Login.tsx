@@ -25,15 +25,13 @@ export default function Login() {
 		const doPost = async () => {
 			try {
 				setIsLoading(true)
-				const { data, status, statusText } =
-					await axios.post<AxiosPostResponse>(
-						"login",
-						{ username, password },
-						{ withCredentials: true }
-					)
+				const { data, status } = await axios.post<AxiosPostResponse>(
+					"login",
+					{ username, password },
+					{ withCredentials: true }
+				)
 				if (status === 200) {
 					const { id, username, isAdmin, session } = data
-					window.sessionStorage.setItem("SESSION", data.session)
 					globalState?.setIsLoggedIn(true)
 					globalState?.setUserData({ id, username, isAdmin })
 					globalState?.setSessionID(session)
