@@ -23,11 +23,9 @@ const PrivateRoute: React.FC<{ adminRule: boolean }> = ({
 						globalState.setSessionID(session)
 						globalState.setUserData({ username, id, isAdmin })
 						globalState.setIsLoggedIn(true)
-						window.sessionStorage.setItem("SESSION", session)
 					}
 					return
 				}
-				window.sessionStorage.removeItem("SESSION")
 			} catch (error) {
 				console.error(error)
 			} finally {
@@ -35,8 +33,7 @@ const PrivateRoute: React.FC<{ adminRule: boolean }> = ({
 			}
 		}
 
-		const session = window.sessionStorage.getItem("SESSION")
-		session && !globalState.sessionID ? doRefresh() : setIsLoading(false)
+		!globalState.sessionID ? doRefresh() : setIsLoading(false)
 
 		return () => {
 			isMounted = false
