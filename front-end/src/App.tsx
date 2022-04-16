@@ -1,5 +1,4 @@
 import React from "react"
-import { CookiesProvider } from "react-cookie"
 import { Routes, Route } from "react-router"
 import NotFound from "./components/404"
 import Admin from "./components/Admin"
@@ -14,24 +13,22 @@ const App = () => {
 	const globalState = useGlobalState()
 
 	return (
-		<CookiesProvider>
-			<GlobalStateContext.Provider value={globalState}>
-				<Routes>
-					<Route path="/" element={<Layout />}>
-						<Route path="login" element={<Login />} />
+		<GlobalStateContext.Provider value={globalState}>
+			<Routes>
+				<Route path="/" element={<Layout />}>
+					<Route path="login" element={<Login />} />
 
-						<Route element={<PrivateRoute adminRule={true} />}>
-							<Route path="admin" element={<Admin />} />
-						</Route>
-
-						<Route element={<PrivateRoute adminRule={false} />}>
-							<Route path="/" element={<Main />} />
-						</Route>
+					<Route element={<PrivateRoute adminRule={true} />}>
+						<Route path="admin" element={<Admin />} />
 					</Route>
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			</GlobalStateContext.Provider>
-		</CookiesProvider>
+
+					<Route element={<PrivateRoute adminRule={false} />}>
+						<Route path="/" element={<Main />} />
+					</Route>
+				</Route>
+				<Route path="*" element={<NotFound />} />
+			</Routes>
+		</GlobalStateContext.Provider>
 	)
 }
 
