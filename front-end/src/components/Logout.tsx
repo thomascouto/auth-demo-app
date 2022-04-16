@@ -9,7 +9,6 @@ const Logout = () => {
 	const location = useLocation() as unknown as LocationProps
 	const handleClick = (e: SyntheticEvent) => {
 		e.preventDefault()
-
 		const doLogout = async () => {
 			try {
 				const response = await axios.post(
@@ -27,10 +26,7 @@ const Logout = () => {
 			}
 		}
 
-		if (window.sessionStorage.getItem("SESSION")) {
-			window.sessionStorage.removeItem("SESSION")
-			doLogout()
-		}
+		doLogout()
 	}
 
 	return (
